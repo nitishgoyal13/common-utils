@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.common.utils</groupId>
+    <groupId>com.nitish.common.utils</groupId>
     <artifactId>utils</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <description>Embedded elasticsearch 6 cluster</description>
+    <description>Common utils to ease the development</description>
     <url>https://github.com/nitishgoyal13/common-utils</url>
     <build>
         <plugins>
