@@ -1,6 +1,5 @@
 package com.collections;
 
-import com.domain.TimeRange;
 import com.domain.Tuple;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -3168,18 +3167,6 @@ public class CollectionUtils {
             }
         }
         return false;
-    }
-
-    public static void splitTimeRange(TimeRange timeRange, long timeWindow, TimeUnit windowTimeUnit,
-            Callback<TimeRange> callback) {
-        long timeWindowMillis = windowTimeUnit.toMillis(timeWindow);
-        long fromTime = timeRange.getFrom();
-
-        while (fromTime <= timeRange.getUpto()) {
-            long uptoTime = Math.min(fromTime + timeWindowMillis, timeRange.getUpto());
-            callback.onVisit(TimeRange.of(fromTime, uptoTime));
-            fromTime = uptoTime + 1;
-        }
     }
 
     public static <K, V> boolean mapEquals(Map<K, List<V>> map1, Map<K, List<V>> map2) {
