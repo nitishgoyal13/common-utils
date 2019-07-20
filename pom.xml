@@ -6,7 +6,7 @@
 
 	<groupId>io.appform.commonutils</groupId>
 	<artifactId>common-utils</artifactId>
-	<version>1.3</version>
+	<version>1.4</version>
 	<description>Common utils to ease the development</description>
 	<url>https://github.com/nitishgoyal13/common-utils</url>
 
