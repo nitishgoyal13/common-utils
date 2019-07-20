@@ -1,17 +1,10 @@
 package com.domain;
 
-/***
- Created by nitish.goyal on 23/08/18
- ***/
-
+import java.io.Serializable;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
-import java.io.Serializable;
-
 /**
- * User: Nitish Goyal
- * Date: 23/08/18
- * Time: 10:58 PM
+ * User: Nitish Goyal Date: 23/08/18 Time: 10:58 PM
  */
 
 public class Range<T extends Comparable<T>> implements Serializable {
@@ -21,10 +14,6 @@ public class Range<T extends Comparable<T>> implements Serializable {
 
     private boolean includeLower;
     private boolean includeUpper;
-
-    public static <T extends Comparable<T>> Range<T> of(T from, T upto, boolean includeLower, boolean includeUpper) {
-        return new Range<>(from, upto).includeLower(includeLower).includeUpper(includeUpper);
-    }
 
     public Range() {
     }
@@ -36,10 +25,13 @@ public class Range<T extends Comparable<T>> implements Serializable {
         }
     }
 
-
     public Range(T from, T upto) {
         this.from = from;
         this.upto = upto;
+    }
+
+    public static <T extends Comparable<T>> Range<T> of(T from, T upto, boolean includeLower, boolean includeUpper) {
+        return new Range<>(from, upto).includeLower(includeLower).includeUpper(includeUpper);
     }
 
     public Range<T> gt(T value) {
@@ -162,11 +154,11 @@ public class Range<T extends Comparable<T>> implements Serializable {
     @Override
     public String toString() {
         return "Range{" +
-               "from=" + from +
-               ", upto=" + upto +
-               ", includeLower=" + includeLower +
-               ", includeUpper=" + includeUpper +
-               '}';
+                "from=" + from +
+                ", upto=" + upto +
+                ", includeLower=" + includeLower +
+                ", includeUpper=" + includeUpper +
+                '}';
     }
 
     @JsonIgnore

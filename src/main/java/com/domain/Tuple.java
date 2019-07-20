@@ -2,12 +2,11 @@ package com.domain;
 
 
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.MapUtils;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections.MapUtils;
 
 /***
  Created by Nitish Goyal on 23/08/18
@@ -20,16 +19,27 @@ public class Tuple<S, T> implements Serializable {
     private S v1;
     private T v2;
 
-    public static <A, B> Tuple<A, B> of(A v1, B v2) {
-        return new Tuple<A, B>(v1, v2);
-    }
-
     public Tuple(S v1, T v2) {
         this.v1 = v1;
         this.v2 = v2;
     }
 
     public Tuple() {
+    }
+
+    public static <A, B> Tuple<A, B> of(A v1, B v2) {
+        return new Tuple<A, B>(v1, v2);
+    }
+
+    public static <K, V> List<Tuple<K, V>> fromMap(Map<K, V> map) {
+        if (MapUtils.isEmpty(map)) {
+            return Collections.emptyList();
+        }
+        List<Tuple<K, V>> rv = Lists.newArrayList();
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            rv.add(Tuple.of(entry.getKey(), entry.getValue()));
+        }
+        return rv;
     }
 
     public S v1() {
@@ -44,12 +54,12 @@ public class Tuple<S, T> implements Serializable {
         return v1;
     }
 
-    public T getV2() {
-        return v2;
-    }
-
     public void setV1(S v1) {
         this.v1 = v1;
+    }
+
+    public T getV2() {
+        return v2;
     }
 
     public void setV2(T v2) {
@@ -87,20 +97,9 @@ public class Tuple<S, T> implements Serializable {
     @Override
     public String toString() {
         return "Tuple{" +
-               "v1=" + v1 +
-               ", v2=" + v2 +
-               '}';
-    }
-
-    public static <K, V> List<Tuple<K, V>> fromMap(Map<K, V> map) {
-        if (MapUtils.isEmpty(map)) {
-            return Collections.emptyList();
-        }
-        List<Tuple<K, V>> rv = Lists.newArrayList();
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            rv.add(Tuple.of(entry.getKey(), entry.getValue()));
-        }
-        return rv;
+                "v1=" + v1 +
+                ", v2=" + v2 +
+                '}';
     }
 
 }

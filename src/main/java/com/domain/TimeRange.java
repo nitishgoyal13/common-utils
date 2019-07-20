@@ -1,13 +1,11 @@
 package com.domain;
 
-import org.joda.time.DateTime;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.joda.time.DateTime;
 
 /**
- * User: Nitish Goyal
- * Date: 23/08/18
- * Time: 11:54 PM
+ * User: Nitish Goyal Date: 23/08/18 Time: 11:54 PM
  */
 
 @SuppressWarnings("all")
@@ -92,10 +90,10 @@ public class TimeRange extends Range<Long> implements Comparable<TimeRange> {
 
     class TimeRangeIterator implements Iterator<TimeRange> {
 
-        private long rangeStart;
         private final long start;
         private final long end;
         private final long interval;
+        private long rangeStart;
 
         public TimeRangeIterator(long interval) {
             this.start = getFrom();

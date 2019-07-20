@@ -1,7 +1,5 @@
 package com.collections;
 
-import com.domain.Adapter;
-import com.domain.ObjectWithId;
 import com.domain.TimeRange;
 import com.domain.Tuple;
 import com.google.common.base.Function;
@@ -10,48 +8,49 @@ import com.google.common.base.Predicate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.google.common.collect.*;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import com.utils.PreConditions;
 import fj.data.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.sonatype.inject.Nullable;
 
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-
 /**
- * User: Nitish Goyal
- * Date: 23/08/18
- * Time: 10:51 PM
+ * User: Nitish Goyal Date: 23/08/18 Time: 10:51 PM
  */
 @SuppressWarnings({"all"})
 public class CollectionUtils {
-
-    public static <S> Transformer<S, S> identity() {
-        return new Transformer<S, S>() {
-            @Override
-            public S transform(S t) {
-                return t;
-            }
-        };
-    }
-
-    public static <FROM, TO> Transformer<FROM, TO> transformer(final Adapter<FROM, TO> adapter) {
-        return new Transformer<FROM, TO>() {
-            @Override
-            public TO transform(FROM t) {
-                return adapter.adapt(t);
-            }
-        };
-    }
 
     public static final Transformer<Object, String> OBJECT_STRING_TRANSFORMER = new Transformer<Object, String>() {
         @Override
@@ -60,7 +59,6 @@ public class CollectionUtils {
         }
 
     };
-
     public static final Transformer<Object, Long> OBJECT_LONG_TRANSFORMER = new Transformer<Object, Long>() {
         @Override
         public Long transform(Object t) {
@@ -73,7 +71,6 @@ public class CollectionUtils {
             return Long.valueOf(t.toString());
         }
     };
-
     public static final Transformer<Object, Float> OBJECT_FLOAT_TRANSFORMER = new Transformer<Object, Float>() {
         @Override
         public Float transform(Object t) {
@@ -87,6 +84,153 @@ public class CollectionUtils {
         }
     };
 
+    public static final Transformer<Object, String> OBJECT_TO_STR_TRANSFORMER = new CollectionUtils.Transformer<Object, String>() {
+        @Override
+        public String transform(Object id) {
+            if (id != null) {
+                return String.valueOf(id);
+            }
+            return null;
+        }
+    };
+    public static final Transformer<Object, Integer> OBJECT_TO_INT_TRANSFORMER =
+            new CollectionUtils.Transformer<Object, Integer>() {
+                @Override
+                public Integer transform(Object id) {
+                    if (id != null) {
+                        return Integer.valueOf(String.valueOf(id));
+                    }
+                    return null;
+                }
+            };
+    public static final Transformer<String, String> LOWER_CASE_TRANSFORMER = new CollectionUtils.Transformer<String, String>() {
+        @Override
+        public String transform(String t) {
+            return (StringUtils.isBlank(t)) ? null : t.trim().toLowerCase();
+        }
+    };
+
+    public static final Transformer<String, ObjectId> STRING_TO_OBJECT_ID_TRANSFORMER =
+            new CollectionUtils.Transformer<String, ObjectId>() {
+                @Override
+                public ObjectId transform(String t) {
+                    return new ObjectId(t);
+                }
+            };
+    public static final Transformer<String, String> STR_TO_STR_TRANSFORMER = new CollectionUtils.Transformer<String, String>() {
+        @Override
+        public String transform(String id) {
+            return id;
+        }
+    };
+    public static final Transformer<String, Object> STR_TO_OBJECT_TRANSFORMER = new CollectionUtils.Transformer<String, Object>() {
+        @Override
+        public Object transform(String id) {
+            return id;
+        }
+    };
+    public static final CollectionUtils.Transformer<Long, Object> LONG_TO_OBJECT_TRANSFORMER =
+            new CollectionUtils.Transformer<Long, Object>() {
+                @Override
+                public Object transform(Long t) {
+                    return t;
+                }
+            };
+    public static final CollectionUtils.Transformer<Integer, Object> INTEGER_TO_OBJECT_TRANSFORMER =
+            new CollectionUtils.Transformer<Integer, Object>() {
+                @Override
+                public Object transform(Integer t) {
+                    return t;
+                }
+            };
+    public static final CollectionUtils.Transformer<Object, Long> OBJECT_TO_LONG_TRANSFORMER =
+            new CollectionUtils.Transformer<Object, Long>() {
+                @Override
+                public Long transform(Object t) {
+                    return Long.valueOf(String.valueOf(t));
+                }
+            };
+    public static final Transformer<Long, String> LONG_TO_STR_TRANSFORMER = new CollectionUtils.Transformer<Long, String>() {
+        @Override
+        public String transform(Long id) {
+            if (id != null) {
+                return String.valueOf(id);
+            }
+            return null;
+        }
+    };
+    public static final Transformer<Double, Long> DOUBLE_TO_LONG_TRANSFORMER = new Transformer<Double, Long>() {
+        @Override
+        public Long transform(Double t) {
+            if (t != null) {
+                return t.longValue();
+            }
+            return null;
+        }
+    };
+    public static final Transformer<Double, Float> DOUBLE_TO_FLOAT_TRANSFORMER = new Transformer<Double, Float>() {
+        @Override
+        public Float transform(Double t) {
+            if (t != null) {
+                return t.floatValue();
+            }
+            return null;
+        }
+    };
+    public static final CollectionUtils.Transformer<String, Long> STR_TO_LONG_TRANSFORMER =
+            new CollectionUtils.Transformer<String, Long>() {
+                @Override
+                public Long transform(String id) {
+                    if (StringUtils.isNotEmpty(id) && !"null".equals(id)) {
+                        return Long.valueOf(id);
+                    }
+                    return null;
+                }
+            };
+    public static final CollectionUtils.Transformer<String, Integer> STR_TO_INTEGER_TRANSFORMER =
+            new CollectionUtils.Transformer<String, Integer>() {
+                @Override
+                public Integer transform(String id) {
+                    if (StringUtils.isNotEmpty(id)) {
+                        return Integer.valueOf(id);
+                    }
+                    return null;
+                }
+            };
+    public static final CollectionUtils.Transformer<String, String> STRING_TO_TRIMMED_LOWERCASE_STRING =
+            new CollectionUtils.Transformer<String, String>() {
+                @Override
+                public String transform(String t) {
+                    return t.trim().toLowerCase();
+                }
+            };
+    public static final CollectionUtils.Transformer<String, String> STRING_TO_TRIMMED_STRING =
+            new CollectionUtils.Transformer<String, String>() {
+                @Override
+                public String transform(String t) {
+                    return t.trim();
+                }
+            };
+    public static final Transformer<String, Integer> STR_TO_INTEGER_SAFE_TRANSFORMER = new Transformer<String, Integer>() {
+        @Override
+        public Integer transform(String t) {
+            if (StringUtils.isNotEmpty(t)) {
+                try {
+                    return Integer.valueOf(t);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+    };
+    public static final CollectionUtils.Transformer<Long, String> LONG_TO_STRING_TRANSFORMER =
+            new CollectionUtils.Transformer<Long, String>() {
+                @Override
+                public String transform(Long aLong) {
+                    return String.valueOf(aLong);
+                }
+            };
     private static CollectionUtils.Transformer<String, String> STRING_VALUE_TO_TRIMMED_LOWER_CASE =
             new CollectionUtils.Transformer<String, String>() {
                 @Override
@@ -97,7 +241,6 @@ public class CollectionUtils {
                     return tag;
                 }
             };
-
     private static CollectionUtils.Transformer<String, String> STRING_VALUE_TO_TRIMMED_UPPER_CASE =
             new CollectionUtils.Transformer<String, String>() {
                 @Override
@@ -109,20 +252,14 @@ public class CollectionUtils {
                 }
             };
 
-    /*public static final CollectionUtils.Transformer<String, String> STRING_TO_CAMEL_CASE =
-            new CollectionUtils.Transformer<String, String>() {
-                @Override
-                public String transform(String t) {
-                    return SprStringUtils.capitalize(t);
-                }
-            };*/
-
-    public static final Transformer<ObjectWithId, String> OBJECT_TO_ID = new Transformer<ObjectWithId, String>() {
-        @Override
-        public String transform(ObjectWithId object) {
-            return object.getId();
-        }
-    };
+    public static <S> Transformer<S, S> identity() {
+        return new Transformer<S, S>() {
+            @Override
+            public S transform(S t) {
+                return t;
+            }
+        };
+    }
 
     public static <E> java.util.function.Predicate<E> not(java.util.function.Predicate<E> predicate) {
         return predicate.negate();
@@ -195,7 +332,7 @@ public class CollectionUtils {
     }
 
     public static <K, K1, V, V1> Map<K1, V1> transformMap(Map<K, V> map, Transformer<K, K1> keyTransformer,
-                                                          Transformer<V, V1> valueTransformer) {
+            Transformer<V, V1> valueTransformer) {
         if (isEmpty(map)) {
             return Collections.emptyMap();
         }
@@ -224,8 +361,9 @@ public class CollectionUtils {
         return rv;
     }
 
-    public static <K, K1, V> Map<K1, V> transformToMapWithFilter(Collection<K> kCollection, Transformer<K, K1> keyTransformer,
-                                                                 Transformer<K, V> valueTransformer, Predicate<K> predicate) {
+    public static <K, K1, V> Map<K1, V> transformToMapWithFilter(Collection<K> kCollection,
+            Transformer<K, K1> keyTransformer,
+            Transformer<K, V> valueTransformer, Predicate<K> predicate) {
         if (isEmpty(kCollection)) {
             return Collections.emptyMap();
         }
@@ -243,7 +381,8 @@ public class CollectionUtils {
         return rv;
     }
 
-    public static <K, V, E> Map<K, Collection<V>> transformToMap(Collection<E> collection, Function<E, Tuple<K, V>> function) {
+    public static <K, V, E> Map<K, Collection<V>> transformToMap(Collection<E> collection,
+            Function<E, Tuple<K, V>> function) {
         if (CollectionUtils.isEmpty(collection)) {
             return Collections.emptyMap();
         }
@@ -390,7 +529,8 @@ public class CollectionUtils {
     /**
      * Group by on a collection based on your group by strategy.
      */
-    public static <T> Map<GroupKey, Collection<T>> group(Collection<T> tCollection, GroupByStrategy<T> groupByStrategy) {
+    public static <T> Map<GroupKey, Collection<T>> group(Collection<T> tCollection,
+            GroupByStrategy<T> groupByStrategy) {
 
         if (CollectionUtils.isEmpty(tCollection) || groupByStrategy == null) {
             return Collections.emptyMap();
@@ -495,11 +635,9 @@ public class CollectionUtils {
         return Lists.newArrayList(data);
     }
 
-
     /**
-     * always returns an arraylist ensuring that the list is mutable.
-     * This method ignores the actual implementation of parameter and always returns the arrayList.
-     * That is why return type has been fixed to ArrayList.
+     * always returns an arraylist ensuring that the list is mutable. This method ignores the actual implementation of
+     * parameter and always returns the arrayList. That is why return type has been fixed to ArrayList.
      */
     public static <T> ArrayList<T> nullSafeMutableList(List<T> data) {
         if (CollectionUtils.isEmpty(data)) {
@@ -530,11 +668,12 @@ public class CollectionUtils {
     /**
      * Transform a list with each element
      *
-     * @param data      data
-     * @param prefix    prefix to append in each element
+     * @param data data
+     * @param prefix prefix to append in each element
      * @param separator separator between prefix and separator.
      */
-    public static <T> List<String> transformToListWithPrefix(Collection<T> data, final Object prefix, final String separator) {
+    public static <T> List<String> transformToListWithPrefix(Collection<T> data, final Object prefix,
+            final String separator) {
         if (CollectionUtils.isEmpty(data)) {
             return Collections.emptyList();
         }
@@ -546,7 +685,8 @@ public class CollectionUtils {
         });
     }
 
-    public static <T> List<String> transformToListWithSuffix(Collection<T> data, final Object suffix, final String separator) {
+    public static <T> List<String> transformToListWithSuffix(Collection<T> data, final Object suffix,
+            final String separator) {
         if (CollectionUtils.isEmpty(data)) {
             return Collections.emptyList();
         }
@@ -570,14 +710,14 @@ public class CollectionUtils {
     }
 
     /**
-     * This method is particularly helpful when you want to maintain type Key constants as enums but would later
-     * want the key to be transformed into a string key.
+     * This method is particularly helpful when you want to maintain type Key constants as enums but would later want
+     * the key to be transformed into a string key.
      *
      * @param originalMap The {@link Map} which needs to be transformed
      * @param transformer The {@link Transformer} to use.
-     * @param <K>         The key type in the Map which should extend an Enum.
-     * @param <V>         The value type in the Map
-     * @param <T>         The transformed key type
+     * @param <K> The key type in the Map which should extend an Enum.
+     * @param <V> The value type in the Map
+     * @param <T> The transformed key type
      * @return The transformed {@link Map} with the key's of the original map. transformed,
      */
     public static <K, V, T> Map<T, V> transformKeysInMap(Map<K, V> originalMap, Transformer<K, T> transformer) {
@@ -716,7 +856,7 @@ public class CollectionUtils {
     }
 
     public static Map<String, List<String>> mergeMapValuesWithNoDuplicates(Map<String, List<String>> oldValues,
-                                                                           Map<String, List<String>> newValues) {
+            Map<String, List<String>> newValues) {
 
         Map<String, List<String>> mergedValues = Maps.newHashMap();
         if (MapUtils.isEmpty(oldValues) && MapUtils.isEmpty(newValues)) {
@@ -954,46 +1094,6 @@ public class CollectionUtils {
         return newList;
     }
 
-    public interface GroupByStrategy<T> {
-
-        GroupKey group(T t);
-    }
-
-    public static class GroupKey {
-
-        private Object[] keys;
-
-        public GroupKey(Object... keys) {
-            this.keys = keys;
-        }
-
-        public Object[] getKeys() {
-            return keys;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            GroupKey groupKey = (GroupKey) o;
-
-            // Probably incorrect - comparing Object[] arrays with Arrays.equals
-            return Arrays.equals(keys, groupKey.keys);
-
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(keys);
-        }
-    }
-
-
     /**
      * Standard transform operation on collections, slightly altered for returning different collection.
      */
@@ -1044,7 +1144,7 @@ public class CollectionUtils {
      * Standard transform operation on collections, slightly altered for returning different collection.
      */
     public static <T, S> Collection<S> transformWithFilter(Collection<T> tCollection, Transformer<T, S> transformer,
-                                                           Predicate<T> predicate) {
+            Predicate<T> predicate) {
 
         if (CollectionUtils.isEmpty(tCollection)) {
             return Collections.emptyList();
@@ -1064,7 +1164,7 @@ public class CollectionUtils {
      * Standard transform operation on collections, slightly altered for returning different collection.
      */
     public static <T, S> List<S> transformToListWithFilter(Collection<T> tCollection, Transformer<T, S> transformer,
-                                                           Predicate<T> predicate) {
+            Predicate<T> predicate) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Collections.emptyList();
         }
@@ -1082,15 +1182,17 @@ public class CollectionUtils {
     /**
      * Applies the standard reduce operation on a collection.
      *
-     * @param tCollection  input collection
+     * @param tCollection input collection
      * @param sTransformer A transformer which converts each element in the collection to an intermediate object
-     * @param accumulator  A transformer which combines the intermediate object and current result to produce a new result
-     * @param <T>          The type of each element in collection
-     * @param <S>          The type of the intermediate objects created from collection's elements
-     * @param <V>          The return type
+     * @param accumulator A transformer which combines the intermediate object and current result to produce a new
+     * result
+     * @param <T> The type of each element in collection
+     * @param <S> The type of the intermediate objects created from collection's elements
+     * @param <V> The return type
      * @return Returns the reduced value
      */
-    public static <T, S, V> V reduce(Collection<T> tCollection, Transformer<T, S> sTransformer, TransformerWithArgs<S, V, V> accumulator) {
+    public static <T, S, V> V reduce(Collection<T> tCollection, Transformer<T, S> sTransformer,
+            TransformerWithArgs<S, V, V> accumulator) {
         V ret = null;
         if (CollectionUtils.isNotEmpty(tCollection)) {
             for (T t : tCollection) {
@@ -1121,12 +1223,14 @@ public class CollectionUtils {
     }
 
     /**
-     * Partition the list into 2 collections (matching, notMatching) of the specified target type by applying predicate.
+     * Partition the list into 2 collections (matching, notMatching) of the specified target type by applying
+     * predicate.
      *
      * @return tuple of list partition collections
      */
-    public static <T, C extends Collection<T>> Tuple<C, C> partitionBy(Collection<T> tList, CollectionProvider<T, C> targetProvider,
-                                                                       Predicate<T> predicate) {
+    public static <T, C extends Collection<T>> Tuple<C, C> partitionBy(Collection<T> tList,
+            CollectionProvider<T, C> targetProvider,
+            Predicate<T> predicate) {
         C matching = targetProvider.newCollection();
         C notMatching = targetProvider.newCollection();
         Tuple<C, C> rv = Tuple.of(matching, notMatching);
@@ -1169,7 +1273,6 @@ public class CollectionUtils {
         return null;
     }
 
-
     public static <T> Set<T> filterSet(Collection<T> tSet, Predicate<T> predicate) {
         Set<T> filteredSet = Sets.newHashSet();
         if (CollectionUtils.isEmpty(tSet)) {
@@ -1189,7 +1292,8 @@ public class CollectionUtils {
 
         @param Function to relate key to the Object
      */
-    public static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, Object> keyExtractor) {
+    public static <T> java.util.function.Predicate<T> distinctByKey(
+            java.util.function.Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> map = new ConcurrentHashMap<>();
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
@@ -1216,7 +1320,8 @@ public class CollectionUtils {
         return sCollection;
     }
 
-    public static <T, S> Set<S> transformToConcurrentHashSet(Collection<? extends T> tCollection, Transformer<T, S> transformer) {
+    public static <T, S> Set<S> transformToConcurrentHashSet(Collection<? extends T> tCollection,
+            Transformer<T, S> transformer) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Sets.newConcurrentHashSet();
         }
@@ -1280,7 +1385,8 @@ public class CollectionUtils {
     /**
      * Standard transform operation on collections, slightly altered for returning different collection.
      */
-    public static <From, To> List<To> transformToList(Collection<? extends From> tCollection, Transformer<From, To> transformer) {
+    public static <From, To> List<To> transformToList(Collection<? extends From> tCollection,
+            Transformer<From, To> transformer) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Lists.newArrayList();
         }
@@ -1295,8 +1401,9 @@ public class CollectionUtils {
         return sCollection;
     }
 
-    public static <From, To> List<To> transformAndAppendToList(Collection<? extends From> tCollection, Transformer<From, To> transformer,
-                                                               List<To> existingCollection) {
+    public static <From, To> List<To> transformAndAppendToList(Collection<? extends From> tCollection,
+            Transformer<From, To> transformer,
+            List<To> existingCollection) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Lists.newArrayList();
         }
@@ -1314,7 +1421,7 @@ public class CollectionUtils {
     }
 
     public static <From, To, Arg> List<To> transformToListWithArgs(Collection<? extends From> tCollection,
-                                                                   TransformerWithArgs<From, To, Arg> transformer, Arg arg) {
+            TransformerWithArgs<From, To, Arg> transformer, Arg arg) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Lists.newArrayList();
         }
@@ -1333,8 +1440,8 @@ public class CollectionUtils {
      * Transforms each element in the source collection and adds that to the target collection.
      */
     public static <From, To> void transformAndAddToCollection(Collection<? extends From> sourceCollection,
-                                                              Transformer<From, To> transformer,
-                                                              Collection<To> targetCollection) {
+            Transformer<From, To> transformer,
+            Collection<To> targetCollection) {
         PreConditions.notNull(targetCollection);
         PreConditions.notNull(transformer);
         for (From f : nullSafeCollection(sourceCollection)) {
@@ -1343,7 +1450,7 @@ public class CollectionUtils {
     }
 
     public static <From, To, Arg> List<To> transformToListWithListArgs(List<? extends From> tCollection,
-                                                                       TransformerWithArgs<From, To, Arg> transformer, List<Arg> argList) {
+            TransformerWithArgs<From, To, Arg> transformer, List<Arg> argList) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Lists.newArrayList();
         }
@@ -1361,7 +1468,8 @@ public class CollectionUtils {
         return sCollection;
     }
 
-    public static <T, S> List<S> transformToFlattenedList(Collection<T> tCollection, Transformer<T, Collection<S>> transformer) {
+    public static <T, S> List<S> transformToFlattenedList(Collection<T> tCollection,
+            Transformer<T, Collection<S>> transformer) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Collections.emptyList();
         }
@@ -1376,7 +1484,7 @@ public class CollectionUtils {
     }
 
     public static <From, To, Arg> Map<From, To> transformToMapWithArgs(Collection<? extends From> tCollection,
-                                                                       TransformerWithArgs<From, To, Arg> transformer, Arg arg) {
+            TransformerWithArgs<From, To, Arg> transformer, Arg arg) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Maps.newHashMap();
         }
@@ -1391,9 +1499,8 @@ public class CollectionUtils {
         return sMap;
     }
 
-
     public static <From, To, Arg> Map<To, From> transformToMapWithArguments(Collection<? extends From> tCollection,
-                                                                            TransformerWithArgs<From, To, Arg> transformer, Arg arg) {
+            TransformerWithArgs<From, To, Arg> transformer, Arg arg) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Maps.newHashMap();
         }
@@ -1408,8 +1515,8 @@ public class CollectionUtils {
         return sMap;
     }
 
-
-    public static <From, To> List<To> transformToListWithNull(Collection<From> tCollection, Transformer<From, To> transformer) {
+    public static <From, To> List<To> transformToListWithNull(Collection<From> tCollection,
+            Transformer<From, To> transformer) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Lists.newArrayList();
         }
@@ -1426,11 +1533,11 @@ public class CollectionUtils {
     }
 
     /**
-     * Transforms the colletion to map.
-     * Key is created by applying transform function on value, by specified transformer.
+     * Transforms the colletion to map. Key is created by applying transform function on value, by specified
+     * transformer.
      */
     public static <ParentT, ChildT extends ParentT, S> Map<S, ChildT> transformToMap(Collection<ChildT> tCollection,
-                                                                                     Transformer<ParentT, S> transformer) {
+            Transformer<ParentT, S> transformer) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Maps.newHashMap();
         }
@@ -1438,7 +1545,8 @@ public class CollectionUtils {
         return transformCollectionToMap(tCollection, transformer);
     }
 
-    public static <T, S> LinkedHashMap<S, T> transformToLinkedHashMap(Collection<T> tCollection, Transformer<T, S> transformer) {
+    public static <T, S> LinkedHashMap<S, T> transformToLinkedHashMap(Collection<T> tCollection,
+            Transformer<T, S> transformer) {
         if (CollectionUtils.isEmpty(tCollection)) {
             return Maps.newLinkedHashMap();
         }
@@ -1446,8 +1554,9 @@ public class CollectionUtils {
         return transformCollectionToLinkedHashMap(tCollection, transformer);
     }
 
-    public static <K, K1, V> LinkedHashMap<K1, V> transformToLinkedHashMap(Collection<K> kCollection, Transformer<K, K1> keyTransformer,
-                                                                           Transformer<K, V> valueTransformer) {
+    public static <K, K1, V> LinkedHashMap<K1, V> transformToLinkedHashMap(Collection<K> kCollection,
+            Transformer<K, K1> keyTransformer,
+            Transformer<K, V> valueTransformer) {
         if (CollectionUtils.isEmpty(kCollection)) {
             return Maps.newLinkedHashMap();
         }
@@ -1463,7 +1572,8 @@ public class CollectionUtils {
         return map;
     }
 
-    public static <T, S> Map<S, Collection<T>> transformToMultiMap(Collection<T> tCollection, Transformer<T, S> transformer) {
+    public static <T, S> Map<S, Collection<T>> transformToMultiMap(Collection<T> tCollection,
+            Transformer<T, S> transformer) {
         HashMultimap<S, T> hashMultimap = HashMultimap.create();
         for (T value : tCollection) {
             if (value != null) {
@@ -1473,7 +1583,8 @@ public class CollectionUtils {
         return hashMultimap.asMap();
     }
 
-    public static <T, S> Map<S, Collection<T>> transformToLinkedMultiMap(Collection<T> tCollection, Transformer<T, S> transformer) {
+    public static <T, S> Map<S, Collection<T>> transformToLinkedMultiMap(Collection<T> tCollection,
+            Transformer<T, S> transformer) {
         LinkedHashMultimap<S, T> linkedHashMultimap = LinkedHashMultimap.create();
         for (T value : tCollection) {
             if (value != null) {
@@ -1483,8 +1594,9 @@ public class CollectionUtils {
         return linkedHashMultimap.asMap();
     }
 
-    public static <K, V, E> Map<K, V> transformToValueMap(Collection<E> eCollection, Transformer<? super E, K> transformer1,
-                                                          Transformer<? super E, V> transformer2) {
+    public static <K, V, E> Map<K, V> transformToValueMap(Collection<E> eCollection,
+            Transformer<? super E, K> transformer1,
+            Transformer<? super E, V> transformer2) {
         if (CollectionUtils.isEmpty(eCollection)) {
             return Maps.newHashMap();
         }
@@ -1500,7 +1612,8 @@ public class CollectionUtils {
         return map;
     }
 
-    public static <K, V> Map<K, List<V>> transformToMultiValuedMapList(Collection<V> collection, Transformer<V, K> transformer) {
+    public static <K, V> Map<K, List<V>> transformToMultiValuedMapList(Collection<V> collection,
+            Transformer<V, K> transformer) {
         Map<K, List<V>> rv = Maps.newHashMap();
         if (isEmpty(collection)) {
             return rv;
@@ -1518,8 +1631,9 @@ public class CollectionUtils {
         return rv;
     }
 
-    public static <K, V, E> Map<K, List<V>> transformToMultiValuedMapList(Collection<E> collection, Transformer<E, K> keyTransformer,
-                                                                          Transformer<E, V> valueTransformer) {
+    public static <K, V, E> Map<K, List<V>> transformToMultiValuedMapList(Collection<E> collection,
+            Transformer<E, K> keyTransformer,
+            Transformer<E, V> valueTransformer) {
         Map<K, List<V>> rv = Maps.newHashMap();
         if (isEmpty(collection)) {
             return rv;
@@ -1541,7 +1655,8 @@ public class CollectionUtils {
         return rv;
     }
 
-    public static <K, V> Map<K, Set<V>> transformToMultiValuedMapSet(Collection<V> collection, Transformer<V, K> transformer) {
+    public static <K, V> Map<K, Set<V>> transformToMultiValuedMapSet(Collection<V> collection,
+            Transformer<V, K> transformer) {
         Map<K, Set<V>> rv = Maps.newHashMap();
         if (isEmpty(collection)) {
             return rv;
@@ -1559,8 +1674,9 @@ public class CollectionUtils {
         return rv;
     }
 
-    public static <C, K, V> Map<K, Set<V>> transformToMultiValuedMapSet(Collection<C> collection, Transformer<C, K> keyTransformer,
-                                                                        Transformer<C, V> valueTransformer) {
+    public static <C, K, V> Map<K, Set<V>> transformToMultiValuedMapSet(Collection<C> collection,
+            Transformer<C, K> keyTransformer,
+            Transformer<C, V> valueTransformer) {
         Map<K, Set<V>> rv = Maps.newHashMap();
         for (C e : collection) {
             if (e == null) {
@@ -1579,7 +1695,8 @@ public class CollectionUtils {
         return rv;
     }
 
-    public static <T, S> Map<T, S> transformToMapWithEqualKeysAndValues(Collection<T> tCollection, Collection<S> sCollection) {
+    public static <T, S> Map<T, S> transformToMapWithEqualKeysAndValues(Collection<T> tCollection,
+            Collection<S> sCollection) {
         if (CollectionUtils.isEmpty(tCollection) || CollectionUtils.isEmpty(sCollection)) {
             return Maps.newHashMap();
         }
@@ -1605,8 +1722,9 @@ public class CollectionUtils {
         return transformCollectionToMap(tCollection, transformer);
     }
 
-    private static <ParentT, ChildT extends ParentT, S> Map<S, ChildT> transformCollectionToMap(Collection<ChildT> tCollection,
-                                                                                                Transformer<ParentT, S> transformer) {
+    private static <ParentT, ChildT extends ParentT, S> Map<S, ChildT> transformCollectionToMap(
+            Collection<ChildT> tCollection,
+            Transformer<ParentT, S> transformer) {
         Map<S, ChildT> map = new HashMap<>();
         for (ChildT t : tCollection) {
             S transform = transformer.transform(t);
@@ -1617,7 +1735,8 @@ public class CollectionUtils {
         return map;
     }
 
-    private static <T, S> LinkedHashMap<S, T> transformCollectionToLinkedHashMap(Collection<T> tCollection, Transformer<T, S> transformer) {
+    private static <T, S> LinkedHashMap<S, T> transformCollectionToLinkedHashMap(Collection<T> tCollection,
+            Transformer<T, S> transformer) {
         LinkedHashMap<S, T> map = new LinkedHashMap<>();
         for (T t : tCollection) {
             S transform = transformer.transform(t);
@@ -1634,6 +1753,34 @@ public class CollectionUtils {
         }
         return collection.iterator().next();
     }
+
+    /*public static final Transformer<String, Long> STR_TO_LONG_SAFE_TRANSFORMER = new Transformer<String, Long>() {
+        @Override
+        public Long transform(String t) {
+            if (!SprStringUtils.isBlank(t) && !"null".equals(t)) {
+                try {
+                    return Long.valueOf(t.trim());
+                } catch (NumberFormatException e) {
+                    //eat up the error
+                }
+            }
+            return null;
+        }
+    };
+
+    public static final Transformer<String, Double> STR_TO_DOUBLE_SAFE_TRANSFORMER = new Transformer<String, Double>() {
+        @Override
+        public Double transform(String t) {
+            if (!SprStringUtils.isBlank(t) && !"null".equals(t)) {
+                try {
+                    return Double.valueOf(t.trim());
+                } catch (NumberFormatException e) {
+                    //eat up the error
+                }
+            }
+            return null;
+        }
+    };*/
 
     public static <T> T getFirstNonNullElementFromCollection(Collection<T> collection) {
         if (CollectionUtils.isEmpty(collection)) {
@@ -1666,215 +1813,6 @@ public class CollectionUtils {
      */
     public static <T> T head(Collection<T> collection) {
         return getFirstElementFromCollection(nullSafeCollection(collection));
-    }
-
-    public interface Transformer<From, To> {
-
-        static <T> Transformer<T, T> identity() {
-            return t -> t;
-        }
-
-        To transform(From t);
-    }
-
-    public interface TransformerWithArgs<From, To, Arg> {
-
-        To transform(From t, Arg args);
-    }
-
-    public interface NamedTransformer<From, To> extends Transformer<From, To> {
-
-        String getTransformerName();
-    }
-
-    public static final Transformer<Object, String> OBJECT_TO_STR_TRANSFORMER = new CollectionUtils.Transformer<Object, String>() {
-        @Override
-        public String transform(Object id) {
-            if (id != null) {
-                return String.valueOf(id);
-            }
-            return null;
-        }
-    };
-
-    public static final Transformer<Object, Integer> OBJECT_TO_INT_TRANSFORMER =
-            new CollectionUtils.Transformer<Object, Integer>() {
-                @Override
-                public Integer transform(Object id) {
-                    if (id != null) {
-                        return Integer.valueOf(String.valueOf(id));
-                    }
-                    return null;
-                }
-            };
-
-    public static final Transformer<String, String> LOWER_CASE_TRANSFORMER = new CollectionUtils.Transformer<String, String>() {
-        @Override
-        public String transform(String t) {
-            return (StringUtils.isBlank(t)) ? null : t.trim().toLowerCase();
-        }
-    };
-
-    public static final Transformer<String, ObjectId> STRING_TO_OBJECT_ID_TRANSFORMER =
-            new CollectionUtils.Transformer<String, ObjectId>() {
-                @Override
-                public ObjectId transform(String t) {
-                    return new ObjectId(t);
-                }
-            };
-
-    public static final Transformer<String, String> STR_TO_STR_TRANSFORMER = new CollectionUtils.Transformer<String, String>() {
-        @Override
-        public String transform(String id) {
-            return id;
-        }
-    };
-
-    public static final Transformer<String, Object> STR_TO_OBJECT_TRANSFORMER = new CollectionUtils.Transformer<String, Object>() {
-        @Override
-        public Object transform(String id) {
-            return id;
-        }
-    };
-
-    public static final CollectionUtils.Transformer<Long, Object> LONG_TO_OBJECT_TRANSFORMER =
-            new CollectionUtils.Transformer<Long, Object>() {
-                @Override
-                public Object transform(Long t) {
-                    return t;
-                }
-            };
-
-    public static final CollectionUtils.Transformer<Integer, Object> INTEGER_TO_OBJECT_TRANSFORMER =
-            new CollectionUtils.Transformer<Integer, Object>() {
-                @Override
-                public Object transform(Integer t) {
-                    return t;
-                }
-            };
-
-    public static final CollectionUtils.Transformer<Object, Long> OBJECT_TO_LONG_TRANSFORMER =
-            new CollectionUtils.Transformer<Object, Long>() {
-                @Override
-                public Long transform(Object t) {
-                    return Long.valueOf(String.valueOf(t));
-                }
-            };
-
-    public static final Transformer<Long, String> LONG_TO_STR_TRANSFORMER = new CollectionUtils.Transformer<Long, String>() {
-        @Override
-        public String transform(Long id) {
-            if (id != null) {
-                return String.valueOf(id);
-            }
-            return null;
-        }
-    };
-
-    /*public static final Transformer<String, Long> STR_TO_LONG_SAFE_TRANSFORMER = new Transformer<String, Long>() {
-        @Override
-        public Long transform(String t) {
-            if (!SprStringUtils.isBlank(t) && !"null".equals(t)) {
-                try {
-                    return Long.valueOf(t.trim());
-                } catch (NumberFormatException e) {
-                    //eat up the error
-                }
-            }
-            return null;
-        }
-    };
-
-    public static final Transformer<String, Double> STR_TO_DOUBLE_SAFE_TRANSFORMER = new Transformer<String, Double>() {
-        @Override
-        public Double transform(String t) {
-            if (!SprStringUtils.isBlank(t) && !"null".equals(t)) {
-                try {
-                    return Double.valueOf(t.trim());
-                } catch (NumberFormatException e) {
-                    //eat up the error
-                }
-            }
-            return null;
-        }
-    };*/
-
-    public static final Transformer<Double, Long> DOUBLE_TO_LONG_TRANSFORMER = new Transformer<Double, Long>() {
-        @Override
-        public Long transform(Double t) {
-            if (t != null) {
-                return t.longValue();
-            }
-            return null;
-        }
-    };
-
-    public static final Transformer<Double, Float> DOUBLE_TO_FLOAT_TRANSFORMER = new Transformer<Double, Float>() {
-        @Override
-        public Float transform(Double t) {
-            if (t != null) {
-                return t.floatValue();
-            }
-            return null;
-        }
-    };
-
-
-    public static final CollectionUtils.Transformer<String, Long> STR_TO_LONG_TRANSFORMER =
-            new CollectionUtils.Transformer<String, Long>() {
-                @Override
-                public Long transform(String id) {
-                    if (StringUtils.isNotEmpty(id) && !"null".equals(id)) {
-                        return Long.valueOf(id);
-                    }
-                    return null;
-                }
-            };
-
-    public static final CollectionUtils.Transformer<String, Integer> STR_TO_INTEGER_TRANSFORMER =
-            new CollectionUtils.Transformer<String, Integer>() {
-                @Override
-                public Integer transform(String id) {
-                    if (StringUtils.isNotEmpty(id)) {
-                        return Integer.valueOf(id);
-                    }
-                    return null;
-                }
-            };
-
-    public static final CollectionUtils.Transformer<String, String> STRING_TO_TRIMMED_LOWERCASE_STRING =
-            new CollectionUtils.Transformer<String, String>() {
-                @Override
-                public String transform(String t) {
-                    return t.trim().toLowerCase();
-                }
-            };
-
-    public static final CollectionUtils.Transformer<String, String> STRING_TO_TRIMMED_STRING =
-            new CollectionUtils.Transformer<String, String>() {
-                @Override
-                public String transform(String t) {
-                    return t.trim();
-                }
-            };
-
-    public static final Transformer<String, Integer> STR_TO_INTEGER_SAFE_TRANSFORMER = new Transformer<String, Integer>() {
-        @Override
-        public Integer transform(String t) {
-            if (StringUtils.isNotEmpty(t)) {
-                try {
-                    return Integer.valueOf(t);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            }
-            return null;
-        }
-    };
-
-    public interface CollectionProvider<T, C extends Collection<T>> {
-
-        C newCollection();
     }
 
     public static <T> CollectionProvider<T, Set<T>> setProvider() {
@@ -1973,7 +1911,8 @@ public class CollectionUtils {
         return parseCollectionWithDelimiterSeparatedElements(values, ",");
     }
 
-    public static Collection<String> parseCollectionWithDelimiterSeparatedElements(Collection<String> values, String delimiter) {
+    public static Collection<String> parseCollectionWithDelimiterSeparatedElements(Collection<String> values,
+            String delimiter) {
         if (CollectionUtils.isEmpty(values)) {
             return Collections.emptyList();
         }
@@ -1998,8 +1937,9 @@ public class CollectionUtils {
         return Lists.newArrayList(result);
     }
 
-    public static <KeyType, EntityType> Map<KeyType, Collection<EntityType>> groupByKey(Collection<EntityType> collectionData,
-                                                                                        Transformer<EntityType, KeyType> transformer) {
+    public static <KeyType, EntityType> Map<KeyType, Collection<EntityType>> groupByKey(
+            Collection<EntityType> collectionData,
+            Transformer<EntityType, KeyType> transformer) {
         if (CollectionUtils.isEmpty(collectionData)) {
             return Collections.emptyMap();
         }
@@ -2018,9 +1958,10 @@ public class CollectionUtils {
         return result;
     }
 
-    public static <KeyType, EntityType, ValueType> Map<KeyType, Collection<ValueType>> groupByKey(Collection<EntityType> collectionData,
-                                                                                                  Transformer<EntityType, KeyType> groupTransformer,
-                                                                                                  Transformer<EntityType, ValueType> valueTransformer) {
+    public static <KeyType, EntityType, ValueType> Map<KeyType, Collection<ValueType>> groupByKey(
+            Collection<EntityType> collectionData,
+            Transformer<EntityType, KeyType> groupTransformer,
+            Transformer<EntityType, ValueType> valueTransformer) {
         if (CollectionUtils.isEmpty(collectionData)) {
             return Collections.emptyMap();
         }
@@ -2039,9 +1980,10 @@ public class CollectionUtils {
         return result;
     }
 
-    public static <KeyType, EntityType, ValueType> Map<KeyType, ValueType> transformToMap(Collection<EntityType> collectionData,
-                                                                                          Transformer<EntityType, KeyType> groupTransformer,
-                                                                                          Transformer<EntityType, ValueType> valueTransformer) {
+    public static <KeyType, EntityType, ValueType> Map<KeyType, ValueType> transformToMap(
+            Collection<EntityType> collectionData,
+            Transformer<EntityType, KeyType> groupTransformer,
+            Transformer<EntityType, ValueType> valueTransformer) {
         if (CollectionUtils.isEmpty(collectionData)) {
             return Collections.emptyMap();
         }
@@ -2058,8 +2000,9 @@ public class CollectionUtils {
         return result;
     }
 
-    public static <KeyType, EntityType> Map<KeyType, List<EntityType>> groupInListByKey(Collection<EntityType> collectionData,
-                                                                                        Transformer<EntityType, KeyType> transformer) {
+    public static <KeyType, EntityType> Map<KeyType, List<EntityType>> groupInListByKey(
+            Collection<EntityType> collectionData,
+            Transformer<EntityType, KeyType> transformer) {
         if (CollectionUtils.isEmpty(collectionData)) {
             return Collections.emptyMap();
         }
@@ -2097,7 +2040,7 @@ public class CollectionUtils {
     }
 
     public static <KeyType, ValueType> Map<KeyType, List<ValueType>> groupByKeyMultiValued(Collection<ValueType> data,
-                                                                                           Transformer<ValueType, List<KeyType>> transformer) {
+            Transformer<ValueType, List<KeyType>> transformer) {
         if (CollectionUtils.isEmpty(data)) {
             return Collections.emptyMap();
         }
@@ -2115,9 +2058,8 @@ public class CollectionUtils {
         return rv;
     }
 
-
     public static <KeyType, ValueType> Set<KeyType> transformToSetWithMultiValueKeys(Collection<ValueType> data,
-                                                                                     Transformer<ValueType, List<KeyType>> transformer) {
+            Transformer<ValueType, List<KeyType>> transformer) {
         if (CollectionUtils.isEmpty(data)) {
             return Collections.emptySet();
         }
@@ -2255,14 +2197,6 @@ public class CollectionUtils {
                 .transformToSet(nullAndEmptySafeValueCollection(ids), CollectionUtils.STR_TO_LONG_TRANSFORMER);
     }
 
-    public static final CollectionUtils.Transformer<Long, String> LONG_TO_STRING_TRANSFORMER =
-            new CollectionUtils.Transformer<Long, String>() {
-                @Override
-                public String transform(Long aLong) {
-                    return String.valueOf(aLong);
-                }
-            };
-
     public static <T> Array<T> toFunctionalArray(T[] inputColl) {
         return fj.data.Array.array(inputColl);
     }
@@ -2359,7 +2293,8 @@ public class CollectionUtils {
         return newMap;
     }
 
-    public static <K, V> Map<K, List<V>> nullAndEmptySafeMergeMultiValuedMaps(Map<K, List<V>> oldMap, Map<K, List<V>> newMap) {
+    public static <K, V> Map<K, List<V>> nullAndEmptySafeMergeMultiValuedMaps(Map<K, List<V>> oldMap,
+            Map<K, List<V>> newMap) {
         oldMap = nullAndEmptySafeMultiValuedMap(oldMap);
         newMap = nullAndEmptySafeMultiValuedMap(newMap);
         return mergeMultiValuedMaps(oldMap, newMap);
@@ -2376,8 +2311,8 @@ public class CollectionUtils {
      *
      * @param oldMap Old Map
      * @param newMap New Map
-     * @param <K>    Key Type
-     * @param <V>    Value Type
+     * @param <K> Key Type
+     * @param <V> Value Type
      * @return Merged Map
      */
     public static <K, V> Map<K, V> mergeMaps(Map<K, V> oldMap, Map<K, V> newMap) {
@@ -2474,7 +2409,6 @@ public class CollectionUtils {
         return mergedList;
     }
 
-
     public static <T> String joinListElements(Collection<T> list) {
         if (CollectionUtils.isEmpty(list)) {
             return "";
@@ -2487,23 +2421,27 @@ public class CollectionUtils {
     }
 
     public static <K, V> Cache<K, V> buildTimeBasedCache(TimeUnit timeUnit, int expiryDuration, int cacheSize) {
-        return CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheSize).expireAfterWrite(expiryDuration, timeUnit).build();
+        return CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheSize)
+                .expireAfterWrite(expiryDuration, timeUnit).build();
 
     }
 
-    public static <K, V> Cache<K, V> buildTimeBasedCache(int concurrency, TimeUnit timeUnit, int expiryDuration, int cacheSize) {
-        return CacheBuilder.newBuilder().concurrencyLevel(concurrency).maximumSize(cacheSize).expireAfterWrite(expiryDuration, timeUnit)
+    public static <K, V> Cache<K, V> buildTimeBasedCache(int concurrency, TimeUnit timeUnit, int expiryDuration,
+            int cacheSize) {
+        return CacheBuilder.newBuilder().concurrencyLevel(concurrency).maximumSize(cacheSize)
+                .expireAfterWrite(expiryDuration, timeUnit)
                 .build();
     }
 
-    public static <K, V> Cache<K, V> buildTimeBasedCacheWithListener(TimeUnit timeUnit, int expiryDuration, int cacheSize,
-                                                                     RemovalListener removalListener) {
+    public static <K, V> Cache<K, V> buildTimeBasedCacheWithListener(TimeUnit timeUnit, int expiryDuration,
+            int cacheSize,
+            RemovalListener removalListener) {
         //noinspection unchecked
-        return CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheSize).expireAfterWrite(expiryDuration, timeUnit)
+        return CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(cacheSize)
+                .expireAfterWrite(expiryDuration, timeUnit)
                 .removalListener(removalListener).build();
 
     }
-
 
     @SuppressWarnings("Duplicates")
     public static <K> List<K> mergeListsWithNoDuplicate(List<K> list1, List<K> list2) {
@@ -2752,7 +2690,7 @@ public class CollectionUtils {
     }
 
     public static String getDelimiterSeparatedMethodForPaidExport(final Collection<String> values, String delimiter,
-                                                                  String appendedString) {
+            String appendedString) {
         if (values == null || values.isEmpty()) {
             return "";
         }
@@ -2766,7 +2704,6 @@ public class CollectionUtils {
         rv = rv.substring(0, rv.length() - 1);
         return rv;
     }
-
 
     public static <T> List<T> mergeBatchesToSingleCollection(Collection<List<T>> batches) {
         if (CollectionUtils.isEmpty(batches)) {
@@ -2795,7 +2732,6 @@ public class CollectionUtils {
         }
         return rv;
     }
-
 
     public static <T> Collection<Set<T>> createBatchesOfSet(Collection<T> data, int batchSize) {
         if (CollectionUtils.isEmpty(data)) {
@@ -2955,7 +2891,7 @@ public class CollectionUtils {
     }
 
     public static <K, V> ConcurrentMap<K, V> transformToMap(Iterable<V> iterable, Transformer<V, K> keyTransformer,
-                                                            boolean throwExceptionOnDuplicateKeys) {
+            boolean throwExceptionOnDuplicateKeys) {
         ConcurrentMap<K, V> rv = Maps.newConcurrentMap();
         for (V v : iterable) {
             if (v == null) {
@@ -3041,9 +2977,8 @@ public class CollectionUtils {
     }
 
     /**
-     * Safe disjoint, checks for empty. Note that if either of the collection is null or empty it returns true
-     * because the method is supposed to return true if there are no common elements.
-     * Useful for set.containsAny(collection)
+     * Safe disjoint, checks for empty. Note that if either of the collection is null or empty it returns true because
+     * the method is supposed to return true if there are no common elements. Useful for set.containsAny(collection)
      */
     public static <T> boolean safeDisjoint(Collection<T> c1, Collection<T> c2) {
         return CollectionUtils.isEmpty(c1) || CollectionUtils.isEmpty(c2) || Collections.disjoint(c1, c2);
@@ -3148,21 +3083,10 @@ public class CollectionUtils {
         return sb.toString();
     }
 
-
     // Sprinklr version
     @SafeVarargs
     public static <T> String mkString(String sep, T... list) {
         return mkString(Arrays.asList(list), sep);
-    }
-
-    public static abstract class Callback<T> {
-
-        public abstract void onVisit(T element);
-    }
-
-    public static abstract class CallbackWithArgs<T, A> {
-
-        public abstract void onVisit(T element, A argument);
     }
 
     /**
@@ -3246,7 +3170,8 @@ public class CollectionUtils {
         return false;
     }
 
-    public static void splitTimeRange(TimeRange timeRange, long timeWindow, TimeUnit windowTimeUnit, Callback<TimeRange> callback) {
+    public static void splitTimeRange(TimeRange timeRange, long timeWindow, TimeUnit windowTimeUnit,
+            Callback<TimeRange> callback) {
         long timeWindowMillis = windowTimeUnit.toMillis(timeWindow);
         long fromTime = timeRange.getFrom();
 
@@ -3306,33 +3231,8 @@ public class CollectionUtils {
         return errorKeys;
     }
 
-    public interface InstanceGeneratorByKey<K, V> {
-
-        V getNewInstance(K key);
-    }
-
-    public interface InstanceGenerator<V> {
-
-        V getNewInstance();
-    }
-
-    /*public static fj.data.HashMap<String, String> mapFromString(String str, String itemSep, final String pairSep) {
-        if (StringUtils.isBlank(str) || StringUtils.isBlank(itemSep) || StringUtils.isBlank(pairSep)) {
-            return new fj.data.HashMap<String, String>(Collections.<String, String>emptyMap());
-        }
-
-        return new fj.data.HashMap<>(Array.array(str.split(itemSep)).
-                foldLeft(new F2<Map<String, String>, String, Map<String, String>>() {
-                    @Override
-                    public Map<String, String> f(Map<String, String> zero, String item) {
-                        String[] pair = item.split(pairSep);
-                        zero.put(pair[0], pair[1]);
-                        return zero;
-                    }
-                }, new HashMap<String, String>()));
-    }*/
-
-    public static <K, V extends Comparable<V>> TreeMap<K, V> getMapSortedOnValue(Map<K, V> anyMap, boolean isAscending) {
+    public static <K, V extends Comparable<V>> TreeMap<K, V> getMapSortedOnValue(Map<K, V> anyMap,
+            boolean isAscending) {
         if (isEmpty(anyMap)) {
             return Maps.newTreeMap(new ValueComparator<>(anyMap, isAscending));
         }
@@ -3345,7 +3245,7 @@ public class CollectionUtils {
     }
 
     public static <K, V extends Comparable<V>> TreeMap<K, V> getMapSortedOnValue(Map<K, V> anyMap, boolean isAscending,
-                                                                                 Comparator<V> comparator) {
+            Comparator<V> comparator) {
         if (isEmpty(anyMap)) {
             return Maps.newTreeMap(new ValueComparator<>(anyMap, isAscending, comparator));
         }
@@ -3354,53 +3254,6 @@ public class CollectionUtils {
             mapToReturn.put(entry.getKey(), entry.getValue());
         }
         return mapToReturn;
-    }
-
-    private static class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
-
-        private final Map<K, V> base;
-        private final boolean isAscending;
-        private final Comparator<V> comparator;
-
-        public ValueComparator(Map<K, V> base, boolean isAscending) {
-            this.base = base;
-            this.isAscending = isAscending;
-            this.comparator = null;
-        }
-
-        public ValueComparator(Map<K, V> base, boolean isAscending, Comparator<V> comparator) {
-            this.base = base;
-            this.isAscending = isAscending;
-            this.comparator = comparator;
-        }
-
-        // Note: this comparator imposes orderings that are inconsistent with
-        // equals.
-        public int compare(K a, K b) {
-            V value1 = base.get(a);
-            V value2 = base.get(b);
-
-            if (comparator != null) {
-                return returnByOrder() * comparator.compare(value1, value2);
-            }
-
-            if (value1 == null) {
-                if (value2 != null) {
-                    return returnByOrder() * -1;
-                } else {
-                    return returnByOrder();
-                }
-            } else if (value2 == null) {
-                return returnByOrder();
-            }
-
-            int toReturn = value1.compareTo(value2);
-            return toReturn == 0 ? returnByOrder() : toReturn * returnByOrder();
-        }
-
-        private int returnByOrder() {
-            return isAscending ? 1 : -1;
-        }
     }
 
     public static <E> List<E> filterProcessed(Set<E> toProcess, Set<E> processed) {
@@ -3481,28 +3334,28 @@ public class CollectionUtils {
         }
     }
 
-    /*public static Set<String> getTrimmedValueSet(String commaSeparatedString) {
-        if (SprStringUtils.isBlank(commaSeparatedString)) {
-            return Collections.emptySet();
-        }
-        Set<String> valueSet = new HashSet<>();
-        List<String> values = Arrays.asList(commaSeparatedString.split(","));
-        for (String value : values) {
-            String trimmedValue = value.trim();
-            if (SprStringUtils.isNotBlank(trimmedValue)) {
-                valueSet.add(trimmedValue);
-            }
-        }
-        return valueSet;
-    }*/
-
-
     public static <E> boolean nullSafeRemove(Collection<E> collection, Collection<E> toRemove) {
         if (CollectionUtils.isEmpty(toRemove)) {
             return false;
         }
         return collection.removeAll(toRemove);
     }
+
+    /*public static fj.data.HashMap<String, String> mapFromString(String str, String itemSep, final String pairSep) {
+        if (StringUtils.isBlank(str) || StringUtils.isBlank(itemSep) || StringUtils.isBlank(pairSep)) {
+            return new fj.data.HashMap<String, String>(Collections.<String, String>emptyMap());
+        }
+
+        return new fj.data.HashMap<>(Array.array(str.split(itemSep)).
+                foldLeft(new F2<Map<String, String>, String, Map<String, String>>() {
+                    @Override
+                    public Map<String, String> f(Map<String, String> zero, String item) {
+                        String[] pair = item.split(pairSep);
+                        zero.put(pair[0], pair[1]);
+                        return zero;
+                    }
+                }, new HashMap<String, String>()));
+    }*/
 
     public static <T> List<T> getIntersection(List<T> list1, List<T> list2) {
         List<T> list = new ArrayList<T>();
@@ -3585,6 +3438,152 @@ public class CollectionUtils {
             }
         }
         return sb.toString();
+    }
+
+    public interface GroupByStrategy<T> {
+
+        GroupKey group(T t);
+    }
+
+    public interface Transformer<From, To> {
+
+        static <T> Transformer<T, T> identity() {
+            return t -> t;
+        }
+
+        To transform(From t);
+    }
+
+    public interface TransformerWithArgs<From, To, Arg> {
+
+        To transform(From t, Arg args);
+    }
+
+    public interface NamedTransformer<From, To> extends Transformer<From, To> {
+
+        String getTransformerName();
+    }
+
+    /*public static Set<String> getTrimmedValueSet(String commaSeparatedString) {
+        if (SprStringUtils.isBlank(commaSeparatedString)) {
+            return Collections.emptySet();
+        }
+        Set<String> valueSet = new HashSet<>();
+        List<String> values = Arrays.asList(commaSeparatedString.split(","));
+        for (String value : values) {
+            String trimmedValue = value.trim();
+            if (SprStringUtils.isNotBlank(trimmedValue)) {
+                valueSet.add(trimmedValue);
+            }
+        }
+        return valueSet;
+    }*/
+
+
+    public interface CollectionProvider<T, C extends Collection<T>> {
+
+        C newCollection();
+    }
+
+    public interface InstanceGeneratorByKey<K, V> {
+
+        V getNewInstance(K key);
+    }
+
+    public interface InstanceGenerator<V> {
+
+        V getNewInstance();
+    }
+
+    public static class GroupKey {
+
+        private Object[] keys;
+
+        public GroupKey(Object... keys) {
+            this.keys = keys;
+        }
+
+        public Object[] getKeys() {
+            return keys;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            GroupKey groupKey = (GroupKey) o;
+
+            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            return Arrays.equals(keys, groupKey.keys);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(keys);
+        }
+    }
+
+    public static abstract class Callback<T> {
+
+        public abstract void onVisit(T element);
+    }
+
+    public static abstract class CallbackWithArgs<T, A> {
+
+        public abstract void onVisit(T element, A argument);
+    }
+
+    private static class ValueComparator<K, V extends Comparable<V>> implements Comparator<K> {
+
+        private final Map<K, V> base;
+        private final boolean isAscending;
+        private final Comparator<V> comparator;
+
+        public ValueComparator(Map<K, V> base, boolean isAscending) {
+            this.base = base;
+            this.isAscending = isAscending;
+            this.comparator = null;
+        }
+
+        public ValueComparator(Map<K, V> base, boolean isAscending, Comparator<V> comparator) {
+            this.base = base;
+            this.isAscending = isAscending;
+            this.comparator = comparator;
+        }
+
+        // Note: this comparator imposes orderings that are inconsistent with
+        // equals.
+        public int compare(K a, K b) {
+            V value1 = base.get(a);
+            V value2 = base.get(b);
+
+            if (comparator != null) {
+                return returnByOrder() * comparator.compare(value1, value2);
+            }
+
+            if (value1 == null) {
+                if (value2 != null) {
+                    return returnByOrder() * -1;
+                } else {
+                    return returnByOrder();
+                }
+            } else if (value2 == null) {
+                return returnByOrder();
+            }
+
+            int toReturn = value1.compareTo(value2);
+            return toReturn == 0 ? returnByOrder() : toReturn * returnByOrder();
+        }
+
+        private int returnByOrder() {
+            return isAscending ? 1 : -1;
+        }
     }
 }
 

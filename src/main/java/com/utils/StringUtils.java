@@ -4,36 +4,36 @@ import com.collections.CollectionUtils;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.internal.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang.WordUtils;
-
-import java.util.*;
 
 
 /**
- * User: Nitish Goyal
- * Date: 7/09/18
- * Time: 2:15 PM
+ * User: Nitish Goyal Date: 7/09/18 Time: 2:15 PM
  */
 @SuppressWarnings("unused")
 public final class StringUtils {
 
     public static final Set<Character> KEYBOARD_PUNCTUATION_SYMBOLS = ImmutableSet
-            .of('~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '`', '-', '=', '[', ']', '\\', '{', '}', '|', ';', '\'',
-                ':', '"', ',', '.', '/', '<', '>', '?');
-
-    private static final String EMPTY = "";
-
+            .of('~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '`', '-', '=', '[', ']', '\\', '{',
+                    '}', '|', ';', '\'',
+                    ':', '"', ',', '.', '/', '<', '>', '?');
     public static final Predicate<String> STRING_NOT_BLANK = new Predicate<String>() {
         @Override
         public boolean apply(@Nullable String s) {
             return StringUtils.isNotBlank(s);
         }
     };
+    private static final String EMPTY = "";
 
     public static String cleanKeyboardPunctuations(String input) {
         StringBuilder sb = new StringBuilder();
-        for(char ch : input.toCharArray()) {
-            if(KEYBOARD_PUNCTUATION_SYMBOLS.contains(ch)) {
+        for (char ch : input.toCharArray()) {
+            if (KEYBOARD_PUNCTUATION_SYMBOLS.contains(ch)) {
                 continue;
             }
             sb.append(ch);
@@ -49,11 +49,11 @@ public final class StringUtils {
 
     public static boolean isBlank(String value) {
         int strLen;
-        if(value == null || (strLen = value.length()) == 0) {
+        if (value == null || (strLen = value.length()) == 0) {
             return true;
         }
-        for(int i = 0; i < strLen; i++) {
-            if((!Character.isWhitespace(value.charAt(i)))) {
+        for (int i = 0; i < strLen; i++) {
+            if ((!Character.isWhitespace(value.charAt(i)))) {
                 return false;
             }
         }
@@ -61,42 +61,42 @@ public final class StringUtils {
     }
 
     public static String blankIfNull(String stringToCheck) {
-        if(stringToCheck == null) {
+        if (stringToCheck == null) {
             stringToCheck = StringUtils.EMPTY;
         }
         return stringToCheck;
     }
 
     public static String nullIfBlank(String stringToCheck) {
-        if(StringUtils.isBlank(stringToCheck)) {
+        if (StringUtils.isBlank(stringToCheck)) {
             return null;
         }
         return stringToCheck;
     }
 
     public static String lowercaseFirstCharacter(String input) {
-        if(isNotBlank(input)) {
+        if (isNotBlank(input)) {
             return Character.toLowerCase(input.charAt(0)) + input.substring(1);
         }
         return input;
     }
 
     public static String uppercaseFirstCharacter(String input) {
-        if(isNotBlank(input)) {
+        if (isNotBlank(input)) {
             return Character.toUpperCase(input.charAt(0)) + input.substring(1);
         }
         return input;
     }
 
     public static String upperCaseFirstCharacterLowerCaseOthers(String input) {
-        if(isNotBlank(input)) {
+        if (isNotBlank(input)) {
             return Character.toUpperCase(input.charAt(0)) + input.substring(1).toLowerCase();
         }
         return input;
     }
 
     public static String capitalize(String sentence, char... separaters) {
-        for(char separater : separaters) {
+        for (char separater : separaters) {
             sentence = sentence.replace(separater, ' ');
         }
         return WordUtils.capitalizeFully(sentence);
@@ -106,9 +106,9 @@ public final class StringUtils {
         PreConditions.positiveInt(tokenTypes.length);
         List<String> rv = new ArrayList<>();
         String[] split = input.split(getSplitRegex(tokenTypes));
-        for(String s : split) {
+        for (String s : split) {
             s = s.trim();
-            if(StringUtils.isNotBlank(s)) {
+            if (StringUtils.isNotBlank(s)) {
                 rv.add(s);
             }
         }
@@ -119,7 +119,7 @@ public final class StringUtils {
         // something like: "[,\\s]+";
         StringBuilder builder = new StringBuilder();
         builder.append("[");
-        for(TokenType tokenType : tokenTypes) {
+        for (TokenType tokenType : tokenTypes) {
             builder.append(tokenType.pattern);
         }
         builder.append("+]");
@@ -127,13 +127,13 @@ public final class StringUtils {
     }
 
     public static int countAlphaNumericCharacters(String text) {
-        if(StringUtils.isBlank(text)) {
+        if (StringUtils.isBlank(text)) {
             return 0;
         }
         int count = 0;
         char[] chars = text.toCharArray();
-        for(char character : chars) {
-            if(Character.isLetterOrDigit(character)) {
+        for (char character : chars) {
+            if (Character.isLetterOrDigit(character)) {
                 count++;
             }
         }
@@ -141,12 +141,12 @@ public final class StringUtils {
     }
 
     public static boolean containsAnyPunctuations(String text) {
-        if(StringUtils.isBlank(text)) {
+        if (StringUtils.isBlank(text)) {
             return false;
         }
         char[] chars = text.toCharArray();
-        for(char character : chars) {
-            if(isPunctuation(character)) {
+        for (char character : chars) {
+            if (isPunctuation(character)) {
                 return true;
             }
         }
@@ -154,8 +154,8 @@ public final class StringUtils {
     }
 
     public static boolean containsAny(String input, List<String> stringsToCheck) {
-        for(String stringToCheck : stringsToCheck) {
-            if(org.apache.commons.lang.StringUtils.contains(input, stringToCheck)) {
+        for (String stringToCheck : stringsToCheck) {
+            if (org.apache.commons.lang.StringUtils.contains(input, stringToCheck)) {
                 return true;
             }
         }
@@ -163,8 +163,8 @@ public final class StringUtils {
     }
 
     public static boolean containsAnyIgnoreCase(String input, List<String> stringsToCheck) {
-        for(String stringToCheck : stringsToCheck) {
-            if(org.apache.commons.lang.StringUtils.containsIgnoreCase(input, stringToCheck)) {
+        for (String stringToCheck : stringsToCheck) {
+            if (org.apache.commons.lang.StringUtils.containsIgnoreCase(input, stringToCheck)) {
                 return true;
             }
         }
@@ -172,14 +172,14 @@ public final class StringUtils {
     }
 
     public static String join(String delimiter, String... elements) {
-        if(CollectionUtils.isEmpty(elements)) {
+        if (CollectionUtils.isEmpty(elements)) {
             return StringUtils.EMPTY;
         }
         return org.apache.commons.lang.StringUtils.join(elements, delimiter);
     }
 
     public static String join(List<String> input, TokenType tokenType) {
-        if(CollectionUtils.isEmpty(input) || tokenType == null) {
+        if (CollectionUtils.isEmpty(input) || tokenType == null) {
             return null;
         }
 
@@ -198,19 +198,9 @@ public final class StringUtils {
         return !isEmpty(str);
     }
 
-    public static enum TokenType {
-        WHITESPACE("\\s"), COMMA(","), COLON(":"), UNDER_SCORE("_"), DOT("."), PLUS("+"), MINUS("-"), NEW_LINE("\n");
-        private final String pattern;
-
-        TokenType(String pattern) {
-            this.pattern = pattern;
-        }
-    }
-
-
     public static void replace(Set<String> strings) {
         String[] stringsArray = strings.toArray(new String[0]);
-        for(int i = 0; i < stringsArray.length; ++i) {
+        for (int i = 0; i < stringsArray.length; ++i) {
             stringsArray[i] = stringsArray[i].toLowerCase();
         }
         strings.clear();
@@ -222,23 +212,32 @@ public final class StringUtils {
     }
 
     /**
-     * Check if a given string ends with any one among the collection of given suffix.
-     * This method uses {@link String#endsWith(String)} to validate this.
+     * Check if a given string ends with any one among the collection of given suffix. This method uses {@link
+     * String#endsWith(String)} to validate this.
      *
-     * @param str      String to check for suffixes
+     * @param str String to check for suffixes
      * @param suffixes Collection of string suffix to check for
      * @return returns true if given string ends with any one of the given suffix.
      */
     public static boolean endsWith(String str, Collection<String> suffixes) {
-        if(isBlank(str) || CollectionUtils.isEmpty(suffixes)) {
+        if (isBlank(str) || CollectionUtils.isEmpty(suffixes)) {
             return false;
         }
-        for(String suffix : CollectionUtils.nullAndBlankSafeValueSet(suffixes)) {
-            if(str.endsWith(suffix)) {
+        for (String suffix : CollectionUtils.nullAndBlankSafeValueSet(suffixes)) {
+            if (str.endsWith(suffix)) {
                 return true;
             }
         }
         return false;
+    }
+
+    public static enum TokenType {
+        WHITESPACE("\\s"), COMMA(","), COLON(":"), UNDER_SCORE("_"), DOT("."), PLUS("+"), MINUS("-"), NEW_LINE("\n");
+        private final String pattern;
+
+        TokenType(String pattern) {
+            this.pattern = pattern;
+        }
     }
 
 }

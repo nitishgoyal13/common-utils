@@ -1,15 +1,18 @@
 package com.utils;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.*;
-
 /**
- * User: Nitish Goyal
- * Date: 23/08/18
+ * User: Nitish Goyal Date: 23/08/18
  */
 
 @SuppressWarnings("all")
@@ -204,7 +207,8 @@ public final class PreConditions {
         if (value >= 0) {
             return value;
         }
-        throw new IllegalArgumentException(String.format("Value for %s should be non-negative (gte 0) - %d", name, value));
+        throw new IllegalArgumentException(
+                String.format("Value for %s should be non-negative (gte 0) - %d", name, value));
     }
 
     public static long negativeLong(long value) {
@@ -225,7 +229,8 @@ public final class PreConditions {
         if (value >= 0) {
             return value;
         }
-        throw new IllegalArgumentException(String.format("Value for %s should be non-negative (gte 0) - %d", name, value));
+        throw new IllegalArgumentException(
+                String.format("Value for %s should be non-negative (gte 0) - %d", name, value));
     }
 
     public static long inRange(long value, long min, long max) {
@@ -239,7 +244,8 @@ public final class PreConditions {
         if (value >= min && value <= max) {
             return value;
         }
-        throw new IllegalArgumentException(String.format("%s should be with in range [%d, %d] - %d", name, min, max, value));
+        throw new IllegalArgumentException(
+                String.format("%s should be with in range [%d, %d] - %d", name, min, max, value));
     }
 
     public static double inRange(double value, double min, double max) {
@@ -253,7 +259,8 @@ public final class PreConditions {
         if (value >= min && value <= max) {
             return value;
         }
-        throw new IllegalArgumentException(String.format("%s should be with in range [%f, %f] - %f", name, min, max, value));
+        throw new IllegalArgumentException(
+                String.format("%s should be with in range [%f, %f] - %f", name, min, max, value));
     }
 
     public static <T> void isNull(T instance, String msg) {
@@ -419,7 +426,8 @@ public final class PreConditions {
             if (StringUtils.isNotBlank(errorMsg)) {
                 errorMsg = " ," + errorMsg;
             }
-            throw new IllegalArgumentException("Cannot parse the date '" + date + "' in the format -'" + dateFormat + "'" + errorMsg);
+            throw new IllegalArgumentException(
+                    "Cannot parse the date '" + date + "' in the format -'" + dateFormat + "'" + errorMsg);
         }
     }
 
@@ -436,7 +444,8 @@ public final class PreConditions {
             if (StringUtils.isNotBlank(errorMsg)) {
                 errorMsg = " ," + errorMsg;
             }
-            throw new IllegalArgumentException("Cannot parse the date '" + date + "' in the format -'" + dateFormat + "'" + errorMsg);
+            throw new IllegalArgumentException(
+                    "Cannot parse the date '" + date + "' in the format -'" + dateFormat + "'" + errorMsg);
         }
     }
 
@@ -450,7 +459,8 @@ public final class PreConditions {
 
     public static void finiteNonNegative(String name, double value) {
         if (Double.isNaN(value) || Double.isInfinite(value) || value < 0.0) {
-            throw new IllegalArgumentException(name + " must be finite and non-negative. Found " + name + " = " + value);
+            throw new IllegalArgumentException(
+                    name + " must be finite and non-negative. Found " + name + " = " + value);
         }
     }
 }
