@@ -1,46 +1,17 @@
 package com.utils;
 
 import com.collections.CollectionUtils;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.internal.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang.WordUtils;
-
 
 /**
  * User: Nitish Goyal Date: 7/09/18 Time: 2:15 PM
  */
 @SuppressWarnings("unused")
 public final class StringUtils {
-
-    public static final Set<Character> KEYBOARD_PUNCTUATION_SYMBOLS = ImmutableSet
-            .of('~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '`', '-', '=', '[', ']', '\\', '{',
-                    '}', '|', ';', '\'',
-                    ':', '"', ',', '.', '/', '<', '>', '?');
-    public static final Predicate<String> STRING_NOT_BLANK = new Predicate<String>() {
-        @Override
-        public boolean apply(@Nullable String s) {
-            return StringUtils.isNotBlank(s);
-        }
-    };
-    private static final String EMPTY = "";
-
-    public static String cleanKeyboardPunctuations(String input) {
-        StringBuilder sb = new StringBuilder();
-        for (char ch : input.toCharArray()) {
-            if (KEYBOARD_PUNCTUATION_SYMBOLS.contains(ch)) {
-                continue;
-            }
-            sb.append(ch);
-        }
-        input = sb.toString();
-        return input;
-    }
 
 
     public static boolean isNotBlank(String value) {
@@ -62,7 +33,7 @@ public final class StringUtils {
 
     public static String blankIfNull(String stringToCheck) {
         if (stringToCheck == null) {
-            stringToCheck = StringUtils.EMPTY;
+            stringToCheck = org.apache.commons.lang.StringUtils.EMPTY;
         }
         return stringToCheck;
     }
@@ -90,19 +61,14 @@ public final class StringUtils {
 
     public static String upperCaseFirstCharacterLowerCaseOthers(String input) {
         if (isNotBlank(input)) {
-            return Character.toUpperCase(input.charAt(0)) + input.substring(1).toLowerCase();
+            return Character.toUpperCase(input.charAt(0)) + input.substring(1)
+                    .toLowerCase();
         }
         return input;
     }
 
-    public static String capitalize(String sentence, char... separaters) {
-        for (char separater : separaters) {
-            sentence = sentence.replace(separater, ' ');
-        }
-        return WordUtils.capitalizeFully(sentence);
-    }
-
-    public static List<String> tokenize(String input, TokenType... tokenTypes) {
+    public static List<String> tokenize(String input,
+                                        TokenType... tokenTypes) {
         PreConditions.positiveInt(tokenTypes.length);
         List<String> rv = new ArrayList<>();
         String[] split = input.split(getSplitRegex(tokenTypes));
@@ -140,20 +106,8 @@ public final class StringUtils {
         return count;
     }
 
-    public static boolean containsAnyPunctuations(String text) {
-        if (StringUtils.isBlank(text)) {
-            return false;
-        }
-        char[] chars = text.toCharArray();
-        for (char character : chars) {
-            if (isPunctuation(character)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean containsAny(String input, List<String> stringsToCheck) {
+    public static boolean containsAny(String input,
+                                      List<String> stringsToCheck) {
         for (String stringToCheck : stringsToCheck) {
             if (org.apache.commons.lang.StringUtils.contains(input, stringToCheck)) {
                 return true;
@@ -162,7 +116,8 @@ public final class StringUtils {
         return false;
     }
 
-    public static boolean containsAnyIgnoreCase(String input, List<String> stringsToCheck) {
+    public static boolean containsAnyIgnoreCase(String input,
+                                                List<String> stringsToCheck) {
         for (String stringToCheck : stringsToCheck) {
             if (org.apache.commons.lang.StringUtils.containsIgnoreCase(input, stringToCheck)) {
                 return true;
@@ -171,23 +126,21 @@ public final class StringUtils {
         return false;
     }
 
-    public static String join(String delimiter, String... elements) {
+    public static String join(String delimiter,
+                              String... elements) {
         if (CollectionUtils.isEmpty(elements)) {
-            return StringUtils.EMPTY;
+            return org.apache.commons.lang.StringUtils.EMPTY;
         }
         return org.apache.commons.lang.StringUtils.join(elements, delimiter);
     }
 
-    public static String join(List<String> input, TokenType tokenType) {
+    public static String join(List<String> input,
+                              TokenType tokenType) {
         if (CollectionUtils.isEmpty(input) || tokenType == null) {
             return null;
         }
 
         return org.apache.commons.lang.StringUtils.join(input.toArray(new String[]{}), tokenType.pattern);
-    }
-
-    public static boolean isPunctuation(char c) {
-        return KEYBOARD_PUNCTUATION_SYMBOLS.contains(c);
     }
 
     public static boolean isEmpty(String str) {
@@ -207,7 +160,8 @@ public final class StringUtils {
         strings.addAll(Arrays.asList(stringsArray));
     }
 
-    public static boolean equalsWithBlankCheck(String str1, String str2) {
+    public static boolean equalsWithBlankCheck(String str1,
+                                               String str2) {
         return blankIfNull(str1).equals(blankIfNull(str2));
     }
 
@@ -219,7 +173,8 @@ public final class StringUtils {
      * @param suffixes Collection of string suffix to check for
      * @return returns true if given string ends with any one of the given suffix.
      */
-    public static boolean endsWith(String str, Collection<String> suffixes) {
+    public static boolean endsWith(String str,
+                                   Collection<String> suffixes) {
         if (isBlank(str) || CollectionUtils.isEmpty(suffixes)) {
             return false;
         }
@@ -232,7 +187,14 @@ public final class StringUtils {
     }
 
     public static enum TokenType {
-        WHITESPACE("\\s"), COMMA(","), COLON(":"), UNDER_SCORE("_"), DOT("."), PLUS("+"), MINUS("-"), NEW_LINE("\n");
+        WHITESPACE("\\s"),
+        COMMA(","),
+        COLON(":"),
+        UNDER_SCORE("_"),
+        DOT("."),
+        PLUS("+"),
+        MINUS("-"),
+        NEW_LINE("\n");
         private final String pattern;
 
         TokenType(String pattern) {
